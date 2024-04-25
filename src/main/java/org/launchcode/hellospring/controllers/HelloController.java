@@ -7,18 +7,15 @@ import org.springframework.web.bind.annotation.*;
 @ResponseBody
 @RequestMapping("hello")
 public class HelloController {
-
-	//	@ annotates http-request type
+//	@ annotates http-request type
 //	handles request to path /hello/bye
 	@GetMapping("bye")
-	@ResponseBody
 	public String bye() {
 		return "Bye, Spring!";
 	}
 
 	//	handles query string requests
 //	  to "/hello?name=anyNameYouWriteHere"
-	@ResponseBody
 	public String helloWithQueryParam(@RequestParam String name) {
 		return "Hello, " + name + "!";
 	}
@@ -26,69 +23,62 @@ public class HelloController {
 	//	handles requests to "/hello/LaunchCode" requests
 //	@GetMapping("hello/{name}")
 	@GetMapping("{name}")
-	@ResponseBody
 	public String helloWithPathParam(@PathVariable String name) {
 		return "Hello, " + name + "!";
 	}
 
 	@GetMapping("form")
-	@ResponseBody
 	public String helloForm() {
-		return "<html>" +
-				"<body>" +
-				"<form action='hello' method='post'>" + //submit request to /hello
-				"<input type='text name='name' />" +
-				"<input type='submit' value='Greet me!' />" +
-				"</form>" +
-				"</body>" +
+		return
+				"<html>" +
+					"<body>" +
+	//				submits request to /greeting
+						"<form action='hello' method='post'>" +
+							"<input type='text' name='name' />" +
+							"<select name='language'>" +
+								"<option value='English'>English</option>" +
+								"<option value='French'>French</option>" +
+								"<option value='Italian'>Italian</option>" +
+								"<option value='Spanish'>Spanish</option>" +
+								"<option value='Japanese'>Japanese</option>" +
+								"<option value='Russian'>Russian</option>" +
+							"</select>" +
+							"<input type='submit' value='Greet me!' />" +
+						"</form>" +
+					"</body>" +
 				"</html>";
-	}
-
+	} // server-side rendering!
 
 ///////////////////////////////////////////////////////////////////////
-/*
-Modify HelloController class to display a form on a GET request
-	ask user for their name & their preferred language
-
-Greeting Form: submission returns & displays “Bonjour Chris”
-
-show language options in dropdown menu
-
-When user submits form via POST request
-	greet them in their selected language
-
-	include five languages, default English
-	in HelloController,
-		public static createMessage(String name, String language)
-		   { display & return language+" "+name }
-*/
 
 	@RequestMapping(value = "hello", method = RequestMethod.POST)
-	@ResponseBody
 	public String helloPost(@RequestParam String name, @RequestParam String language) {
-		if (name == null) {
-			name = "World";
-		}
-
+		// default name
+		if (name.isEmpty()) { name = "World"; }
 		return createMessage(name, language);
-		// bonus mission: prettify this response string HTML
 	}
 
-	public static String createMessage(String n, String l) {
+	public static String createMessage(String name, String language) {
 		String greeting = "";
 
-		if (l.equals("english")) {
-			greeting = "Hello";
-		} else if (l.equals("french")) {
-			greeting = "Bonjour";
-		} else if (l.equals("italian")) {
-			greeting = "Bonjourno";
-		} else if (l.equals("spanish")) {
-			greeting = "Hola";
-		} else if (l.equals("german")) {
-			greeting = "Hallo";
+		switch (language) {
+			case "French":
+				greeting = "Bonjour";
+				break;
+			case "Italian":
+				greeting = "Ciao";
+				break;
+			case "Spanish":
+				greeting = "Hola";
+				break;
+			case "Japanese":
+				greeting = "Konichiwa";
+				break;
+			case "Russian":
+				greeting = "Privet";
+				break;
+			case "English" : greeting = "Hello";
 		}
-
-		return greeting + " " + n;
+		return greeting + " " + name;
 	}
 }
